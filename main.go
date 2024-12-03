@@ -99,7 +99,12 @@ func main() {
 			}
 
 		} else {
-			fmt.Printf("Your input data is not invalid. Try again!\n")
+			if !isValidName {
+				fmt.Printf("First name or last name that you enetered is too short.\n")
+			}
+			if !isValidEmail {
+				fmt.Printf("Your email address doesn't contain @ sign.\n")
+			}
 			break
 		}
 	}
