@@ -4,7 +4,10 @@ import (
 	"booking-app/helpers"
 	"fmt"
 	"time"
+	"sync"
 )
+
+var wg = sync.WaitGroup{}
 
 var conferenceName = "Go Conference Hall"
 var remainingTickets uint = 50
@@ -23,75 +26,75 @@ func main() {
 
 	greetUsers()
 
-	for remainingTickets > 0 && len(bookings) < int(conferenceTickets) {
+	var city, firstName, lastName, email string
+	var totalTickets uint
+	city, firstName, lastName, email, totalTickets = getUserInput()
+	var isValidName, isValidEmail = helpers.ValidateUserInput(firstName, lastName, email)
 
-		var city, firstName, lastName, email string
-		var totalTickets uint
-		city, firstName, lastName, email, totalTickets = getUserInput()
-		var isValidName, isValidEmail = helpers.ValidateUserInput(firstName, lastName, email)
+	switch city {
+	case "London":
+		remainingTickets = 50
+		cityTicket(city, remainingTickets, totalTickets)
+	case "Singapore":
+		remainingTickets = 50
+		cityTicket(city, remainingTickets, totalTickets)
+	case "New York":
+		remainingTickets = 5
+		cityTicket(city, remainingTickets, totalTickets)
+	case "Berlin":
+		remainingTickets = 10
+		cityTicket(city, remainingTickets, totalTickets)
+	case "India", "Dubai":
+		remainingTickets = 15
+		cityTicket(city, remainingTickets, totalTickets)
+	default:
+		fmt.Println("No valid city selected")
+		return 
+	}
 
-		switch city {
-		case "London":
-			remainingTickets = 50
-			cityTicket(city, remainingTickets, totalTickets)
-		case "Singapore":
-			remainingTickets = 50
-			cityTicket(city, remainingTickets, totalTickets)
-		case "New York":
-			remainingTickets = 5
-			cityTicket(city, remainingTickets, totalTickets)
-		case "Berlin":
-			remainingTickets = 10
-			cityTicket(city, remainingTickets, totalTickets)
-		case "India", "Dubai":
-			remainingTickets = 15
-			cityTicket(city, remainingTickets, totalTickets)
-		default:
-			fmt.Println("No valid city selected")
-			continue
-		}
+	if isValidName && isValidEmail {
 
-		if isValidName && isValidEmail {
+		if totalTickets == 0 {
+			fmt.Printf("It's an invalid input. Please try again!\n")
+			return
 
-			if totalTickets == 0 {
-				fmt.Printf("It's an invalid input. Please try again!\n")
-				continue
+		} else if totalTickets <= remainingTickets {
 
-			} else if totalTickets <= remainingTickets {
+			bookTicket(totalTickets, firstName, lastName, email)
+			wg.Add(1)
+			go sendTicket(totalTickets, firstName, lastName, email)
 
-				bookTicket(totalTickets, firstName, lastName, email)
-				go sendTicket(totalTickets, firstName, lastName, email)
+			var firstNames = getFirstNames()
+			fmt.Printf("The list of first names in the booking list: %v\n", firstNames)
 
-				var firstNames = getFirstNames()
-				fmt.Printf("The list of first names in the booking list: %v\n", firstNames)
+		} else if totalTickets == remainingTickets {
 
-			} else if totalTickets == remainingTickets {
+			fmt.Printf("You are lucky as we only left with %v remaining tickets.\n", remainingTickets)
+			fmt.Printf("Our conference is booked and sold out. Come back next year!\n")
+			return
 
-				fmt.Printf("You are lucky as we only left with %v remaining tickets.\n", remainingTickets)
-				fmt.Printf("Our conference is booked and sold out. Come back next year!\n")
-				continue
-
-			} else if remainingTickets == 0 {
-				fmt.Printf("Our conference is booked and sold out. Come back next year!\n")
-				break
-
-			} else {
-				fmt.Printf("We only have %v tickets remaining, so you can't book %v tickets\n", remainingTickets, totalTickets)
-				fmt.Printf("Thank you for your time. Please try again!\n")
-				continue
-			}
+		} else if remainingTickets == 0 {
+			fmt.Printf("Our conference is booked and sold out. Come back next year!\n")
+			return
 
 		} else {
-			if !isValidName {
-				fmt.Println("First name or last name that you entered is too short.")
-			}
-			if !isValidEmail {
-				fmt.Println("Your email address doesn't contain @ sign.")
-			}
-			break
+			fmt.Printf("We only have %v tickets remaining, so you can't book %v tickets\n", remainingTickets, totalTickets)
+			fmt.Printf("Thank you for your time. Please try again!\n")
+			return
 		}
+
+	} else {
+		if !isValidName {
+			fmt.Println("First name or last name that you entered is too short.")
+		}
+		if !isValidEmail {
+			fmt.Println("Your email address doesn't contain @ sign.")
+		}
+		return
 	}
+	wg.Wait()
 }
+
 
 func greetUsers() {
 	fmt.Printf("Welcome to our %v booking application!\n", conferenceName)
@@ -167,4 +170,5 @@ func sendTicket(total_tickets uint, firstName string, lastName string, email str
 	fmt.Println("##########")
 	fmt.Printf("Sending Ticket: %v\n Email Address: %v\n", ticket, email)
 	fmt.Println("##########")
+	wg.Done()
 }
