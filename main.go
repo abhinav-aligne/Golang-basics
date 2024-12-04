@@ -3,6 +3,7 @@ package main
 import (
 	"booking-app/helpers"
 	"fmt"
+	"time"
 )
 
 var conferenceName = "Go Conference Hall"
@@ -12,7 +13,7 @@ var bookings = make([]UserData, 0)
 const conferenceTickets = 50
 
 type UserData struct {
-	firstName        string
+	firstName       string
 	lastName        string
 	email           string
 	numberOfTickets uint
@@ -42,7 +43,7 @@ func main() {
 		case "Berlin":
 			remainingTickets = 10
 			cityTicket(city, remainingTickets, totalTickets)
-		case "Hong Kong", "Dubai":
+		case "India", "Dubai":
 			remainingTickets = 15
 			cityTicket(city, remainingTickets, totalTickets)
 		default:
@@ -57,7 +58,10 @@ func main() {
 				continue
 
 			} else if totalTickets <= remainingTickets {
+
 				bookTicket(totalTickets, firstName, lastName, email)
+				go sendTicket(totalTickets, firstName, lastName, email)
+
 				var firstNames = getFirstNames()
 				fmt.Printf("The list of first names in the booking list: %v\n", firstNames)
 
@@ -155,4 +159,12 @@ func bookTicket(totalTickets uint, firstName string, lastName string, email stri
 
 	fmt.Printf("Thank you %v %v for booking %v tickets. You will receive a confirmation email at %v\n", firstName, lastName, totalTickets, email)
 	fmt.Printf("The number of tickets remaining are %v for %v\n", remainingTickets, conferenceName)
+}
+
+func sendTicket(total_tickets uint, firstName string, lastName string, email string) {
+	time.Sleep(10 * time.Second)
+	var ticket = fmt.Sprintf("%v tickets for %v %v", total_tickets, firstName, lastName)
+	fmt.Println("##########")
+	fmt.Printf("Sending Ticket: %v\n Email Address: %v\n", ticket, email)
+	fmt.Println("##########")
 }
