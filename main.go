@@ -3,14 +3,12 @@ package main
 import (
 	"booking-app/helpers"
 	"fmt"
-	"strings"
+	"strconv"
 )
-
-// initiliase = :=
 
 var conferenceName = "Go Conference Hall"
 var remainingTickets uint = 50
-var bookings = []string{}
+var bookings = make([]map[string]string, 0)
 
 const conferenceTickets = 50
 
@@ -94,8 +92,7 @@ func greetUsers() {
 func getFirstNames() []string {
 	var firstNames = []string{}
 	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		firstNames = append(firstNames, names[0])
+		firstNames = append(firstNames, booking["firstName"])
 	}
 	return firstNames
 }
@@ -136,7 +133,16 @@ func cityTicket(city string, remainingTickets uint, total_tickets uint) {
 
 func bookTicket(totalTickets uint, firstName string, lastName string, email string) {
 	remainingTickets = remainingTickets - totalTickets
-	bookings = append(bookings, firstName+" "+lastName)
+
+	// create a map for a user data
+	var userData = make(map[string]string)
+	userData["firstName"] = firstName
+	userData["lastName"] = lastName
+	userData["email"] = email
+	userData["userTickets"] = strconv.FormatUint(uint64(totalTickets), 10)
+
+	bookings = append(bookings, userData)
+	fmt.Printf("List of bookings is %v\n", bookings)
 
 	fmt.Println()
 
