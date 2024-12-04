@@ -1,14 +1,21 @@
-//					ASSIGNMENT-2
-// CREATE A BILLING SYSTEM THAT A USER SENDS NUMBER OF MESSAGES AND WHICH COSTS 0.02 DOLLARS
-// CALCULATE THE TOTAL COST, IF DORIS SEND 72 MESSAGES IN A SINGLE DAY
+//					ASSIGNMENT-3
+// The new intern on the team screwed up their documentation comment.
+
 
 package main
 
 import "fmt"
 
 func main() {
-	numMessagesFromDoris := 72
-	costPerMessage := 0.02
-	totalCost := costPerMessage * float64(numMessagesFromDoris)
-	fmt.Printf("Doris spent %.2f on text messages today\n", totalCost)
+		
+		// This is a single line comment
+
+		/*
+			We are increasing the maximum message length from 140 to 280 characters.
+			Very reluctantly, I might add.
+			Users actually want to write more than 140 characters?!? Madness.
+		*/
+	maxMessageLength := 140
+	newMaxMessageLength := 280
+	fmt.Println("Textio is increasing the maximum message length from", maxMessageLength, "to", newMaxMessageLength, "characters.")
 }
