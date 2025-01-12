@@ -22,6 +22,24 @@ type UserData struct {
 	numberOfTickets uint
 }
 
+type shape interface {
+	area() float64
+	perimeter() float64
+}
+
+type rect struct {
+	width float64
+	height float64
+}
+
+func (r rect) perimeter() float64 {
+	return 2*r.width + 2*r.height
+}
+
+func (r rect) area() float64 {
+	return r.width * r.height
+}
+
 func main() {
 
 	greetUsers()
@@ -49,7 +67,7 @@ func main() {
 		cityTicket(city, remainingTickets, totalTickets)
 	default:
 		fmt.Println("No valid city selected")
-		return 
+		return
 	}
 
 	if isValidName && isValidEmail {
@@ -63,6 +81,8 @@ func main() {
 			bookTicket(totalTickets, firstName, lastName, email)
 			wg.Add(1)
 			go sendTicket(totalTickets, firstName, lastName, email)
+			// time.Sleep(10)
+			// wg.Wait()
 
 			var firstNames = getFirstNames()
 			fmt.Printf("The list of first names in the booking list: %v\n", firstNames)
@@ -92,8 +112,9 @@ func main() {
 		}
 		return
 	}
-	wg.Wait()
+	 wg.Wait()
 }
+
 
 
 func greetUsers() {
